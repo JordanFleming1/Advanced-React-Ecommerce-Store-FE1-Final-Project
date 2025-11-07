@@ -1,0 +1,30 @@
+/* Global styles for the ecommerce app */
+:root {
+  font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Reset body to work with Bootstrap */
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: #ffffff;
+  color: #212529;
+}
+
+/* Remove default button styles to let Bootstrap handle them */
+button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+/* Let Bootstrap handle link styles */
+a {
+  text-decoration: none;
+}

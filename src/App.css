@@ -1,0 +1,24 @@
+/* Custom styles for the ecommerce app */
+.App {
+  min-height: 100vh;
+}
+
+/* Remove default Vite styles that conflict with Bootstrap */
+#root {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+/* Product card hover effects */
+.card:hover {
+  transform: translateY(-2px);
+  transition: transform 0.2s ease-in-out;
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+/* Custom badge positioning */
+.position-absolute {
+  position: absolute !important;
+}
