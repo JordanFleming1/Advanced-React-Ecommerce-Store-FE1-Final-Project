@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+
 import { 
   Offcanvas, 
   Row, 
@@ -8,9 +9,12 @@ import {
   InputGroup, 
   Form,
   Alert,
-  Badge
+  Badge,
 } from 'react-bootstrap';
 import { useAppSelector, useAppDispatch } from '../hooks/reduxHooks';
+import { useAuth } from '../hooks/useAuth';
+import { createOrder } from '../services/orderService';
+import type { CreateOrderData, ShippingAddress } from '../types/orderType';
 import { 
   closeCart, 
   removeFromCart, 
@@ -23,16 +27,32 @@ import {
 const ShoppingCart: React.FC = () => {
   const dispatch = useAppDispatch();
   const { items, totalItems, totalPrice, isOpen } = useAppSelector((state) => state.cart);
+  const { isAuthenticated, user } = useAuth();
   
   // State for checkout process
   const [isCheckingOut, setIsCheckingOut] = useState(false);
   const [checkoutSuccess, setCheckoutSuccess] = useState(false);
+  const [checkoutError, setCheckoutError] = useState<string | null>(null);
+  const [showShippingForm, setShowShippingForm] = useState(false);
+  const [orderNumber, setOrderNumber] = useState<string>('');
   
   // State for image errors (track by product ID)
-  const [imageErrors, setImageErrors] = useState<Record<number, boolean>>({});
+  const [imageErrors, setImageErrors] = useState<Record<string, boolean>>({});
+
+  // State for shipping address
+  const [shippingAddress, setShippingAddress] = useState<ShippingAddress>({
+    fullName: user?.displayName || '',
+    addressLine1: '',
+    addressLine2: '',
+    city: '',
+    state: '',
+    zipCode: '',
+    country: 'US',
+    phone: ''
+  });
 
   // Handle image error for specific product
-  const handleImageError = (productId: number) => {
+  const handleImageError = (productId: string) => {
     setImageErrors(prev => ({ ...prev, [productId]: true }));
   };
 
@@ -40,25 +60,105 @@ const ShoppingCart: React.FC = () => {
   const handleClose = () => {
     dispatch(closeCart());
     setCheckoutSuccess(false); // Reset success message when closing
+    setCheckoutError(null);
+    setShowShippingForm(false);
+  };
+
+  // Handle shipping address changes
+  const handleShippingAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setShippingAddress(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
+
+  // Handle initial checkout (show shipping form)
+  const handleCheckout = () => {
+    if (!isAuthenticated) {
+      setCheckoutError('Please log in to place an order');
+      return;
+    }
+    
+    if (items.length === 0) {
+      setCheckoutError('Your cart is empty');
+      return;
+    }
+    
+    setShowShippingForm(true);
+  };
+
+  // Handle final order placement
+  const handlePlaceOrder = async () => {
+    if (!isAuthenticated) {
+      setCheckoutError('Please log in to place an order');
+      return;
+    }
+
+    try {
+      setIsCheckingOut(true);
+      setCheckoutError(null);
+      
+      // Validate shipping address
+      if (!shippingAddress.fullName || !shippingAddress.addressLine1 || 
+          !shippingAddress.city || !shippingAddress.state || !shippingAddress.zipCode) {
+        throw new Error('Please fill in all required shipping address fields');
+      }
+
+      // Create order data from cart items
+      const orderData: CreateOrderData = {
+        items: items.map(item => ({
+          productId: item.product.id,
+          quantity: item.quantity
+        })),
+        shippingAddress,
+        paymentMethod: 'Credit Card' // Simplified for now
+      };
+
+      console.log('Creating order with data:', orderData);
+      
+      // Create the order
+      const order = await createOrder(orderData);
+      
+      console.log('Order created successfully:', order);
+      
+      // Clear the cart and show success
+      dispatch(clearCart());
+      setOrderNumber(order.orderNumber);
+      setCheckoutSuccess(true);
+      setShowShippingForm(false);
+      
+      // Close success message automatically after 5 seconds
+      setTimeout(() => {
+        setCheckoutSuccess(false);
+        handleClose();
+      }, 5000);
+      
+    } catch (error) {
+      console.error('Error creating order:', error);
+      setCheckoutError(error instanceof Error ? error.message : 'Failed to place order');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
 
   // Handle remove item from cart
-  const handleRemoveItem = (productId: number) => {
+  const handleRemoveItem = (productId: string) => {
     dispatch(removeFromCart(productId));
   };
 
   // Handle increment quantity
-  const handleIncrement = (productId: number) => {
+  const handleIncrement = (productId: string) => {
     dispatch(incrementQuantity(productId));
   };
 
   // Handle decrement quantity
-  const handleDecrement = (productId: number) => {
+  const handleDecrement = (productId: string) => {
     dispatch(decrementQuantity(productId));
   };
 
   // Handle manual quantity change
-  const handleQuantityChange = (productId: number, newQuantity: string) => {
+  const handleQuantityChange = (productId: string, newQuantity: string) => {
     const quantity = parseInt(newQuantity);
     if (!isNaN(quantity) && quantity >= 0) {
       if (quantity === 0) {
@@ -67,25 +167,6 @@ const ShoppingCart: React.FC = () => {
         dispatch(updateCartItemQuantity({ productId, quantity }));
       }
     }
-  };
-
-  // Handle checkout
-  const handleCheckout = async () => {
-    setIsCheckingOut(true);
-    
-    // Simulate checkout process (since FakeStore API doesn't have real checkout)
-    setTimeout(() => {
-      // Clear the cart
-      dispatch(clearCart());
-      setIsCheckingOut(false);
-      setCheckoutSuccess(true);
-      
-      // Auto-close success message after 3 seconds
-      setTimeout(() => {
-        setCheckoutSuccess(false);
-        handleClose();
-      }, 3000);
-    }, 2000); // 2 second delay to simulate processing
   };
 
   return (
@@ -105,10 +186,155 @@ const ShoppingCart: React.FC = () => {
         {checkoutSuccess ? (
           // Checkout Success Message
           <Alert variant="success" className="text-center">
-            <Alert.Heading>🎉 Order Successful!</Alert.Heading>
-            <p>Thank you for your purchase! Your cart has been cleared.</p>
-            <p className="small text-muted">This window will close automatically...</p>
+            <Alert.Heading>🎉 Order Placed Successfully!</Alert.Heading>
+            <p>Thank you for your purchase!</p>
+            <p><strong>Order Number:</strong> {orderNumber}</p>
+            <p className="small text-muted">You can view your order in the Order History section.</p>
           </Alert>
+        ) : checkoutError ? (
+          // Error Message
+          <Alert variant="danger">
+            <Alert.Heading>❌ Checkout Error</Alert.Heading>
+            <p>{checkoutError}</p>
+            <Button 
+              variant="outline-danger" 
+              size="sm" 
+              onClick={() => setCheckoutError(null)}
+            >
+              Try Again
+            </Button>
+          </Alert>
+        ) : showShippingForm ? (
+          // Shipping Address Form
+          <div>
+            <h5 className="mb-3">Shipping Address</h5>
+            <Form>
+              <Row>
+                <Col xs={12}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Full Name *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="fullName"
+                      value={shippingAddress.fullName}
+                      onChange={handleShippingAddressChange}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              
+              <Form.Group className="mb-3">
+                <Form.Label>Address Line 1 *</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="addressLine1"
+                  value={shippingAddress.addressLine1}
+                  onChange={handleShippingAddressChange}
+                  required
+                />
+              </Form.Group>
+              
+              <Form.Group className="mb-3">
+                <Form.Label>Address Line 2</Form.Label>
+                <Form.Control
+                  type="text"
+                  name="addressLine2"
+                  value={shippingAddress.addressLine2}
+                  onChange={handleShippingAddressChange}
+                />
+              </Form.Group>
+              
+              <Row>
+                <Col xs={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>City *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="city"
+                      value={shippingAddress.city}
+                      onChange={handleShippingAddressChange}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col xs={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>State *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="state"
+                      value={shippingAddress.state}
+                      onChange={handleShippingAddressChange}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+              
+              <Row>
+                <Col xs={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>ZIP Code *</Form.Label>
+                    <Form.Control
+                      type="text"
+                      name="zipCode"
+                      value={shippingAddress.zipCode}
+                      onChange={handleShippingAddressChange}
+                      required
+                    />
+                  </Form.Group>
+                </Col>
+                <Col xs={6}>
+                  <Form.Group className="mb-3">
+                    <Form.Label>Phone</Form.Label>
+                    <Form.Control
+                      type="tel"
+                      name="phone"
+                      value={shippingAddress.phone}
+                      onChange={handleShippingAddressChange}
+                    />
+                  </Form.Group>
+                </Col>
+              </Row>
+            </Form>
+            
+            {/* Order Summary */}
+            <div className="border-top pt-3 mt-3">
+              <Row>
+                <Col>
+                  <strong>Total: ${totalPrice.toFixed(2)}</strong>
+                </Col>
+              </Row>
+            </div>
+            
+            {/* Action Buttons */}
+            <div className="d-grid gap-2 mt-3">
+              <Button 
+                variant="success" 
+                size="lg"
+                onClick={handlePlaceOrder}
+                disabled={isCheckingOut}
+              >
+                {isCheckingOut ? (
+                  <>
+                    <span className="spinner-border spinner-border-sm me-2" />
+                    Placing Order...
+                  </>
+                ) : (
+                  `Place Order ($${totalPrice.toFixed(2)})`
+                )}
+              </Button>
+              
+              <Button 
+                variant="outline-secondary"
+                onClick={() => setShowShippingForm(false)}
+                disabled={isCheckingOut}
+              >
+                Back to Cart
+              </Button>
+            </div>
+          </div>
         ) : items.length === 0 ? (
           // Empty Cart
           <div className="text-center py-5">
@@ -233,15 +459,12 @@ const ShoppingCart: React.FC = () => {
                   variant="success" 
                   size="lg"
                   onClick={handleCheckout}
-                  disabled={isCheckingOut}
+                  disabled={isCheckingOut || !isAuthenticated}
                 >
-                  {isCheckingOut ? (
-                    <>
-                      <span className="spinner-border spinner-border-sm me-2" />
-                      Processing...
-                    </>
+                  {!isAuthenticated ? (
+                    'Please Log In to Checkout'
                   ) : (
-                    `Checkout ($${totalPrice.toFixed(2)})`
+                    `Proceed to Checkout ($${totalPrice.toFixed(2)})`
                   )}
                 </Button>
                 

@@ -5,7 +5,6 @@ import cartReducer from './cartSlice.tsx';
 export const store = configureStore({
   reducer: {
     cart: cartReducer,
-    // We can add more slices here later (user, products, etc.)
   },
   // Enable Redux DevTools in development
   devTools: true,

@@ -92,7 +92,7 @@ const cartSlice = createSlice({
     },
 
     // Remove item completely from cart
-    removeFromCart: (state, action: PayloadAction<number>) => {
+    removeFromCart: (state, action: PayloadAction<string>) => {
       const productId = action.payload;
       state.items = state.items.filter(item => item.id !== productId);
       
@@ -130,7 +130,7 @@ const cartSlice = createSlice({
     },
 
     // Increase item quantity by 1
-    incrementQuantity: (state, action: PayloadAction<number>) => {
+    incrementQuantity: (state, action: PayloadAction<string>) => {
       const productId = action.payload;
       const item = state.items.find(item => item.id === productId);
       
@@ -148,7 +148,7 @@ const cartSlice = createSlice({
     },
 
     // Decrease item quantity by 1
-    decrementQuantity: (state, action: PayloadAction<number>) => {
+    decrementQuantity: (state, action: PayloadAction<string>) => {
       const productId = action.payload;
       const item = state.items.find(item => item.id === productId);
       

@@ -2,7 +2,7 @@ import type { Product } from './productType';
 
 // Interface for a cart item (extends Product with quantity)
 export interface CartItem {
-  id: number;
+  id: string; // Changed to string to match Firestore IDs
   product: Product;
   quantity: number;
 }
@@ -23,6 +23,6 @@ export interface AddToCartPayload {
 
 // Interface for updating cart item quantity
 export interface UpdateCartItemPayload {
-  productId: number;
+  productId: string; // Changed to string to match Firestore IDs
   quantity: number;
 }
