@@ -69,6 +69,25 @@ const Home: React.FC = () => {
     setSelectedCategory(category);
   };
 
+  // Handle manual refresh
+  const handleManualRefresh = async () => {
+    console.log("🔄 Manual refresh triggered");
+    
+    // Invalidate all React Query caches
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['products'] }),
+      queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] }),
+      queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
+      queryClient.invalidateQueries({ queryKey: ['products', null] }),
+      queryClient.invalidateQueries({ queryKey: ['categories'] })
+    ]);
+    
+    // Force refetch
+    await queryClient.refetchQueries({ queryKey: ['products'] });
+    
+    console.log("✅ Manual refresh completed");
+  };
+
   // Handle product update/delete callback
   const handleProductUpdated = () => {
     // Invalidate React Query cache to refresh product list
@@ -116,6 +135,7 @@ const Home: React.FC = () => {
         queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] }),
         // Invalidate the "all products" view specifically
         queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
+        queryClient.invalidateQueries({ queryKey: ['products', null] }),
         // Also invalidate categories in case we added a new category
         queryClient.invalidateQueries({ queryKey: ['categories'] })
       ]);
@@ -124,6 +144,7 @@ const Home: React.FC = () => {
       
       // Force a refetch of the current data
       await queryClient.refetchQueries({ queryKey: ['products'] });
+      await queryClient.refetchQueries({ queryKey: ['products', selectedCategory] });
       console.log("🔄 Forced refetch completed");
       
       // Reset form
@@ -272,7 +293,15 @@ const Home: React.FC = () => {
               </p>
             </div>
             {isAuthenticated && (
-              <div className="ms-3">
+              <div className="ms-3 d-flex gap-2">
+                <Button 
+                  variant="outline-primary" 
+                  onClick={handleManualRefresh}
+                  className="d-flex align-items-center"
+                >
+                  <span className="me-2">🔄</span>
+                  Refresh
+                </Button>
                 <Button 
                   variant="success" 
                   onClick={() => setShowCreateModal(true)}

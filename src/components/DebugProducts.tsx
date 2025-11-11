@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Button, Alert, Card, Container } from 'react-bootstrap';
+import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
 import { createProduct, getProducts } from '../services/productService';
 import type { Product } from '../types/productType';
 
 const DebugProducts: React.FC = () => {
   const { isAuthenticated } = useAuth();
+  const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string>('');
   const [products, setProducts] = useState<Product[]>([]);
@@ -38,7 +40,20 @@ const DebugProducts: React.FC = () => {
       
       setMessage(`✅ Successfully created product: ${createdProduct.title} (ID: ${createdProduct.id})`);
       
-      // Refresh the products list
+      // Force React Query cache invalidation
+      console.log('🔄 Invalidating React Query cache...');
+      await Promise.all([
+        queryClient.invalidateQueries({ queryKey: ['products'] }),
+        queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
+        queryClient.invalidateQueries({ queryKey: ['products', null] }),
+        queryClient.invalidateQueries({ queryKey: ['categories'] })
+      ]);
+      
+      // Force refetch
+      console.log('🔄 Forcing refetch...');
+      await queryClient.refetchQueries({ queryKey: ['products'] });
+      
+      // Also refresh our local state
       await loadProducts();
       
     } catch (error) {

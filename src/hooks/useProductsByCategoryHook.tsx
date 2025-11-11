@@ -30,9 +30,11 @@ export const useProductsByCategory = (category?: string) => {
                 throw error;
             }
         },
-        staleTime: 5 * 60 * 1000, // 5 minutes
-        gcTime: 10 * 60 * 1000, // 10 minutes
+        staleTime: 0, // Always consider data stale to force fresh fetches
+        gcTime: 5 * 60 * 1000, // 5 minutes
         enabled: true, // Always enabled
         retry: 1, // Only retry once to avoid long loading times
+        refetchOnWindowFocus: true, // Refetch when window regains focus
+        refetchOnMount: true, // Always refetch on mount
     });
 };
