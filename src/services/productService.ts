@@ -38,27 +38,34 @@ import type {
  */
 export const createProduct = async (productData: ProductCreateData): Promise<Product> => {
   try {
-    console.log("Creating product with data:", productData);
+    console.log("🛍️ Creating product with data:", productData);
     
     const user = auth.currentUser;
     if (!user) {
+      console.error("❌ User not authenticated");
       throw new Error("User must be authenticated to create products");
     }
 
-    console.log("User authenticated:", user.uid);
+    console.log("✅ User authenticated:", user.uid);
 
     // Validate required fields
     if (!productData.title || !productData.category || !productData.description) {
+      console.error("❌ Missing required fields:", {
+        title: !!productData.title,
+        category: !!productData.category,
+        description: !!productData.description
+      });
       throw new Error("Title, category, and description are required");
     }
 
     if (productData.price <= 0) {
+      console.error("❌ Invalid price:", productData.price);
       throw new Error("Price must be greater than 0");
     }
 
     // Generate a new document reference with unique ID
     const productRef = doc(collection(db, "products"));
-    console.log("Generated product ref:", productRef.id);
+    console.log("📝 Generated product ref:", productRef.id);
     
     // Prepare product data with Firestore fields
     const product: Omit<Product, 'id'> = {
@@ -89,21 +96,26 @@ export const createProduct = async (productData: ProductCreateData): Promise<Pro
       variants: []
     };
 
-    console.log("Prepared product data:", product);
+    console.log("🏗️ Prepared product data:", product);
 
     // Save to Firestore
+    console.log("💾 Saving to Firestore...");
     await setDoc(productRef, {
       ...product,
       createdAt: serverTimestamp(),
       updatedAt: serverTimestamp()
     });
 
-    console.log("Product saved successfully");
+    console.log("✅ Product saved successfully with ID:", productRef.id);
 
-    return {
+    const finalProduct = {
       id: productRef.id,
       ...product
     };
+
+    console.log("🎉 Returning created product:", finalProduct);
+
+    return finalProduct;
   } catch (error) {
     console.error("Error creating product:", error);
     if (error instanceof Error) {
@@ -190,11 +202,14 @@ export const getProducts = async (
   pageSize: number = 20
 ): Promise<ProductsResponse> => {
   try {
+    console.log("🔍 getProducts called with filters:", filters);
+    
     // Use a simplified query to avoid complex Firestore indexes
     const constraints: Parameters<typeof query>[1][] = [];
 
     // Only use basic filters that don't require complex composite indexes
     if (filters.category) {
+      console.log("📂 Adding category filter:", filters.category);
       constraints.push(where("category", "==", filters.category));
     }
 
@@ -202,14 +217,20 @@ export const getProducts = async (
     constraints.push(orderBy("createdAt", "desc"));
     constraints.push(limit(100)); // Get more for client-side filtering
     
+    console.log("📝 Query constraints:", constraints.length);
+    
     // Create and execute query
     const productsQuery = query(collection(db, "products"), ...constraints);
+    console.log("🔄 Executing Firestore query...");
     const querySnapshot = await getDocs(productsQuery);
+    
+    console.log("📊 Raw Firestore results:", querySnapshot.docs.length, "documents");
     
     const products: Product[] = [];
     
     querySnapshot.docs.forEach((doc) => {
       const data = doc.data();
+      console.log("📄 Processing document:", doc.id, data.title);
       products.push({
         id: doc.id,
         title: data.title,
@@ -229,11 +250,15 @@ export const getProducts = async (
       });
     });
 
+    console.log("📦 Processed products:", products.length);
+
     // Apply client-side filtering to avoid complex Firestore indexes
     let filteredProducts = products;
     
     if (filters.isActive !== undefined) {
+      console.log("🎯 Filtering by isActive:", filters.isActive);
       filteredProducts = filteredProducts.filter(p => p.isActive === filters.isActive);
+      console.log("📊 After isActive filter:", filteredProducts.length);
     }
     
     if (filters.inStock) {
@@ -281,6 +306,13 @@ export const getProducts = async (
     const endIndex = pageSize;
     const paginatedProducts = filteredProducts.slice(startIndex, endIndex);
 
+    console.log("✅ Final result:", {
+      totalRaw: products.length,
+      afterFiltering: filteredProducts.length,
+      afterPagination: paginatedProducts.length,
+      hasMore: filteredProducts.length > pageSize
+    });
+
     return {
       products: paginatedProducts,
       total: filteredProducts.length,
@@ -289,7 +321,7 @@ export const getProducts = async (
       hasMore: filteredProducts.length > pageSize
     };
   } catch (error) {
-    console.error("Error fetching products:", error);
+    console.error("❌ Error fetching products:", error);
     throw new Error("Failed to fetch products");
   }
 };

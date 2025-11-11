@@ -8,14 +8,21 @@ export const useProductsByCategory = (category?: string) => {
         queryKey: ["products", category], // Include category in cache key
         queryFn: async (): Promise<Product[]> => {
             try {
+                console.log("🎯 useProductsByCategory called with category:", category);
+                
                 if (category) {
-                    return await getProductsByCategory(category);
+                    console.log("📂 Fetching products for category:", category);
+                    const result = await getProductsByCategory(category);
+                    console.log("📦 Category products result:", result.length);
+                    return result;
                 } else {
+                    console.log("📦 Fetching all active products");
                     const result = await getProducts({ isActive: true });
+                    console.log("📊 All products result:", result.products.length);
                     return result.products;
                 }
             } catch (error) {
-                console.error("Error fetching products from Firestore:", error);
+                console.error("❌ Error in useProductsByCategory:", error);
                 // If it's a Firestore error and we're getting all products, provide helpful message
                 if (!category && error instanceof Error) {
                     throw new Error("No products found in your database. Use the Product Management page to add products or migrate sample data.");

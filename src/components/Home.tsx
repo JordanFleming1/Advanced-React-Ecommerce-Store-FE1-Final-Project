@@ -43,6 +43,16 @@ const Home: React.FC = () => {
     selectedCategory || undefined // Convert empty string to undefined
   );
 
+  // Debug logging for products data
+  console.log("🏠 Home component render:", {
+    selectedCategory,
+    productsLength: products?.length || 0,
+    isLoading,
+    isError,
+    error: error?.message,
+    isAuthenticated
+  });
+
   // Handle adding products to cart with Redux
   const handleAddToCart = (product: Product) => {
     // Dispatch addToCart action
@@ -95,13 +105,26 @@ const Home: React.FC = () => {
       await createProduct(quickProduct);
       setCreateSuccess('Product created successfully!');
       
+      console.log("🔄 Invalidating React Query cache...");
+      
       // Invalidate React Query cache to refresh product list
-      // Invalidate all product queries (with any category filter)
-      queryClient.invalidateQueries({ queryKey: ['products'] });
-      // Specifically invalidate the current category view
-      queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] });
-      // Also invalidate categories in case we added a new category
-      queryClient.invalidateQueries({ queryKey: ['categories'] });
+      // Use Promise.all to ensure all invalidations complete
+      await Promise.all([
+        // Invalidate all product queries (with any category filter)
+        queryClient.invalidateQueries({ queryKey: ['products'] }),
+        // Specifically invalidate the current category view if any
+        queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] }),
+        // Invalidate the "all products" view specifically
+        queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
+        // Also invalidate categories in case we added a new category
+        queryClient.invalidateQueries({ queryKey: ['categories'] })
+      ]);
+      
+      console.log("✅ Cache invalidation completed");
+      
+      // Force a refetch of the current data
+      await queryClient.refetchQueries({ queryKey: ['products'] });
+      console.log("🔄 Forced refetch completed");
       
       // Reset form
       setQuickProduct({
@@ -158,6 +181,13 @@ const Home: React.FC = () => {
     const errorMessage = error instanceof Error ? error.message : 'Something went wrong while fetching products.';
     const isEmptyDatabase = errorMessage.includes('No products found in your database');
     
+    console.log("❌ Error in Home component:", {
+      error,
+      errorMessage,
+      isEmptyDatabase,
+      selectedCategory
+    });
+    
     return (
       <Container className="mt-4">
         <Alert variant={isEmptyDatabase ? "info" : "danger"}>
@@ -165,6 +195,16 @@ const Home: React.FC = () => {
             {isEmptyDatabase ? "🏪 Welcome to Your Store!" : "❌ Error Loading Products"}
           </Alert.Heading>
           <p>{errorMessage}</p>
+          
+          {/* Debug information */}
+          <details className="mt-2">
+            <summary className="text-muted small">Debug Information</summary>
+            <pre className="text-muted small mt-2">
+              Selected Category: {selectedCategory || 'All'}
+              {'\n'}Error Type: {error?.constructor?.name || 'Unknown'}
+              {'\n'}Authentication: {isAuthenticated ? 'Yes' : 'No'}
+            </pre>
+          </details>
           
           {isEmptyDatabase && (
             <div className="mt-3">

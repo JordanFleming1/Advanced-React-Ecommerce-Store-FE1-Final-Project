@@ -1,5 +1,8 @@
 # 🛍️ Advanced React TypeScript Ecommerce Store
 
+[![Build and Test](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml)
+[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml)
+
 A modern, fully-featured ecommerce web application that I built with React, TypeScript, Redux Toolkit, and React Query. This project showcases my advanced frontend development skills and comprehensive understanding of modern web technologies. 
 ## ✨ Features
 
@@ -115,6 +118,132 @@ npm run preview      # Preview production build
 
 # Code Quality
 npm run lint         # Run ESLint
+npm run lint:fix     # Fix ESLint issues automatically
+npm run type-check   # Run TypeScript type checking
+
+# Testing
+npm run test         # Run tests in watch mode
+npm run test:run     # Run tests once
+npm run test:coverage # Run tests with coverage report
+npm run test:ui      # Run tests with UI
+
+# CI/CD
+npm run ci           # Run full CI pipeline (lint + type-check + build + test)
+```
+
+## 🚀 CI/CD Pipeline
+
+This project includes a comprehensive **Continuous Integration and Continuous Deployment** pipeline using **GitHub Actions** with **automatic deployment to Vercel**:
+
+### **Automated Workflows**
+
+#### 🔄 **Build and Test Workflow** (`ci.yml`)
+Triggers on every push and pull request to the `main` branch:
+
+1. **Environment Setup**
+   - Ubuntu latest runner
+   - Node.js 20.x with npm caching
+   - Install dependencies with `npm ci`
+
+2. **Code Quality Checks**
+   - **ESLint**: Code linting and style enforcement
+   - **TypeScript**: Type checking with `tsc --noEmit`
+
+3. **Build Process**
+   - **Production Build**: `npm run build`
+   - **Build Artifact Upload**: Dist files stored for deployment
+
+4. **Testing Phase**
+   - **Unit Tests**: Comprehensive test suite with Vitest
+   - **Test Results**: Coverage reports uploaded as artifacts
+   - **Failure Prevention**: Workflow fails if any tests fail
+
+5. **Deployment Readiness**
+   - Confirmation that code is ready for production deployment
+   - Only runs on successful main branch pushes
+
+#### 🛡️ **Comprehensive CI/CD Pipeline** (`main.yml`)
+Extended workflow with **automatic deployment** and multi-environment testing:
+
+1. **Continuous Integration**
+   - **Matrix Strategy**: Tests against Node.js 18.x and 20.x
+   - **Security Auditing**: `npm audit` for vulnerability scanning
+   - **Artifact Management**: Test results and build files with 30-day retention
+
+2. **🚀 Continuous Deployment**
+   - **Production Deployment**: Automatic deployment to Vercel on main branch
+   - **Preview Deployments**: Automatic preview URLs for pull requests
+   - **Environment Protection**: Deployment only after all tests pass
+   - **Rollback Safety**: Previous versions remain accessible
+
+3. **🌐 Multi-Environment Strategy**
+   - **Production**: `main` branch → Live production site
+   - **Staging/Preview**: Pull requests → Preview environments
+   - **Environment URLs**: Automatically posted in GitHub deployments
+
+#### 🔧 **Deployment Process**
+
+**For Production (main branch pushes):**
+1. ✅ CI tests must pass (build-and-test job)
+2. ✅ Security audit must pass (security-audit job)
+3. 🚀 Automatic deployment to Vercel production
+4. 📧 Deployment status posted to GitHub
+5. 🌐 Live site updated instantly
+
+**For Pull Requests:**
+1. ✅ CI tests must pass
+2. 🔍 Preview deployment created
+3. 💬 Preview URL commented on PR
+4. 🔄 Auto-updates with new commits
+
+### **🌍 Deployment Infrastructure**
+
+#### **Vercel Platform**
+- **Framework**: Optimized for Vite React apps
+- **CDN**: Global edge network for fast loading
+- **HTTPS**: Automatic SSL certificates
+- **Custom Domains**: Production domain support
+- **Analytics**: Performance monitoring included
+
+#### **Configuration**
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist/`
+- **Node Version**: 20.x
+- **Environment Variables**: Managed through Vercel dashboard
+- **SPA Routing**: Configured for React Router
+
+### **CI/CD Benefits**
+
+✅ **Automated Quality Assurance**: Every code change is automatically tested  
+✅ **Zero-Downtime Deployments**: Seamless updates without service interruption  
+✅ **Preview Environments**: Test changes before merging with automatic previews  
+✅ **Rollback Capability**: Quick reversion to previous versions if needed  
+✅ **Code Quality Enforcement**: Linting and type checking on every commit  
+✅ **Multi-Environment Testing**: Compatibility across Node.js versions  
+✅ **Security Monitoring**: Automated vulnerability scanning  
+✅ **Build Verification**: Ensures production build works before deployment  
+✅ **Global CDN**: Fast loading times worldwide via Vercel's edge network  
+
+### **Workflow Configuration**
+
+The CI pipeline is configured to:
+- **Fail Fast**: Stop execution if any step fails
+- **Cache Dependencies**: Speed up builds with npm caching
+- **Artifact Storage**: Preserve test results and build files
+- **Branch Protection**: Only allow tested code to reach main branch
+
+### **Running CI Locally**
+
+You can simulate the CI pipeline locally:
+```bash
+# Run the complete CI pipeline
+npm run ci
+
+# Individual steps
+npm run lint && \
+npm run type-check && \
+npm run build && \
+npm run test:run
 ```
 
 ## 🎯 Key Development Concepts I Implemented
@@ -177,6 +306,90 @@ npm run lint         # Run ESLint
 - **TypeScript generics** I created for flexible types
 - **Redux middleware** I configured for side effects
 - **React Query optimizations** I implemented for caching
+
+---
+
+## ⚙️ Deployment Setup
+
+### **🚀 Setting Up Vercel Deployment**
+
+To enable automatic deployment to Vercel, follow these steps:
+
+#### **1. Create Vercel Account**
+```bash
+# Install Vercel CLI
+npm install -g vercel
+
+# Login to Vercel
+vercel login
+```
+
+#### **2. Configure GitHub Repository**
+1. **Import Repository** to Vercel dashboard
+2. **Connect GitHub** account to Vercel
+3. **Select Repository** for deployment
+
+#### **3. Set Environment Variables**
+In your GitHub repository settings → Secrets and variables → Actions, add:
+
+```bash
+VERCEL_TOKEN=your_vercel_token_here
+VERCEL_ORG_ID=your_org_id_here  
+VERCEL_PROJECT_ID=your_project_id_here
+```
+
+#### **4. Get Vercel Secrets**
+```bash
+# Get your Vercel token
+vercel --help  # Shows how to create tokens
+
+# Get project details
+vercel link  # Links local project to Vercel project
+cat .vercel/project.json  # Shows project ID and org ID
+```
+
+#### **5. Configure Vercel Project**
+- **Framework**: Automatically detected as Vite
+- **Build Command**: `npm run build`
+- **Output Directory**: `dist`
+- **Install Command**: `npm ci`
+
+### **🔄 Deployment Workflow**
+
+#### **Automatic Deployment Triggers**
+- **Production**: Push to `main` branch
+- **Preview**: Create pull request
+- **Manual**: Trigger workflow manually
+
+#### **Deployment Process**
+1. ✅ **CI Tests Pass** → Required for deployment
+2. 🔨 **Build Application** → Vite production build
+3. 🚀 **Deploy to Vercel** → Automatic deployment
+4. 🌐 **Update Live Site** → Zero-downtime deployment
+5. 📧 **Notify GitHub** → Deployment status updates
+
+### **📊 Deployment Features**
+
+#### **Production Deployment**
+- **Custom Domain** support
+- **HTTPS** automatically configured
+- **Global CDN** for fast loading
+- **Automatic SSL** certificates
+- **Environment Variables** managed securely
+
+#### **Preview Deployments**
+- **Unique URLs** for each PR
+- **Automatic Comments** on pull requests
+- **Branch Deployments** for testing
+- **Shareable Links** for stakeholders
+
+#### **Monitoring & Analytics**
+- **Real-time Metrics** via Vercel dashboard
+- **Performance Insights** and Core Web Vitals
+- **Error Tracking** and deployment logs
+- **Traffic Analytics** and visitor metrics
+
+---
 
 ## 🙏 Acknowledgments
 

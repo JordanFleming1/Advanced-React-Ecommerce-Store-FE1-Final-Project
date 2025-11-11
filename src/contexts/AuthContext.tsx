@@ -1,8 +1,15 @@
 import React, { createContext, useEffect, useState } from 'react';
 import { onAuthStateChange, getUserProfile, logoutUser } from '../services/authService';
-import type { AuthContextType, UserProfile } from '../types/authTypes';
+import type { 
+  AuthContextType, 
+  UserProfile, 
+  UserRegistrationData, 
+  UserLoginData, 
+  UserProfileUpdateData 
+} from '../types/authTypes';
 import type { User } from 'firebase/auth';
 
+// eslint-disable-next-line react-refresh/only-export-components
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 interface AuthProviderProps {
@@ -49,16 +56,18 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return unsubscribe;
   }, []);
 
-  const register = async (): Promise<void> => {
+  const register = async (userData: UserRegistrationData): Promise<void> => {
     setError(null);
     // Registration is handled by the components directly
     // This is here for context completeness
+    console.log('Register called with:', userData);
   };
 
-  const login = async (): Promise<void> => {
+  const login = async (userData: UserLoginData): Promise<void> => {
     setError(null);
     // Login is handled by the components directly
     // This is here for context completeness
+    console.log('Login called with:', userData);
   };
 
   const logout = async (): Promise<void> => {
@@ -78,6 +87,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     setError(null);
   };
 
+  // Placeholder implementations for missing methods
+  const updateProfile = async (userData: UserProfileUpdateData): Promise<void> => {
+    // TODO: Implement profile update functionality
+    console.log('Update profile called with:', userData);
+  };
+
+  const deleteAccount = async (): Promise<void> => {
+    // TODO: Implement account deletion functionality
+    console.log('Delete account called');
+  };
+
+  const refreshProfile = async (): Promise<void> => {
+    // TODO: Implement profile refresh functionality
+    console.log('Refresh profile called');
+  };
+
   const value: AuthContextType = {
     user,
     isAuthenticated,
@@ -86,7 +111,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     register,
     login,
     logout,
-    clearError
+    clearError,
+    updateProfile,
+    deleteAccount,
+    refreshProfile
   };
 
   return (
