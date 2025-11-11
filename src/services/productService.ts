@@ -8,7 +8,6 @@ import {
   deleteDoc,
   query,
   where,
-  orderBy,
   limit,
   serverTimestamp,
   writeBatch
@@ -220,21 +219,16 @@ export const getProducts = async (
 
     console.log("✅ User authenticated:", user.uid, "- filtering products by createdBy");
     
-    // Use a simplified query to avoid complex Firestore indexes
+    // Simplified query to avoid complex Firestore indexes
+    // We'll use client-side filtering for categories and sorting to avoid index requirements
     const constraints: Parameters<typeof query>[1][] = [];
 
     // IMPORTANT: Filter by user ID first to ensure user-specific products
     constraints.push(where("createdBy", "==", user.uid));
     
-    // Only use basic filters that don't require complex composite indexes
-    if (filters.category) {
-      console.log("📂 Adding category filter:", filters.category);
-      constraints.push(where("category", "==", filters.category));
-    }
-
-    // Simple ordering without multiple where clauses to avoid index requirements
-    constraints.push(orderBy("createdAt", "desc"));
-    constraints.push(limit(100)); // Get more for client-side filtering
+    // Don't add orderBy here to avoid composite index requirements
+    // We'll sort on the client side instead
+    constraints.push(limit(100)); // Get up to 100 user products
     
     console.log("📝 Query constraints:", constraints.length);
     
@@ -273,6 +267,13 @@ export const getProducts = async (
 
     // Apply client-side filtering to avoid complex Firestore indexes
     let filteredProducts = products;
+    
+    // Filter by category if specified (client-side)
+    if (filters.category) {
+      console.log("🎯 Filtering by category:", filters.category);
+      filteredProducts = filteredProducts.filter(p => p.category === filters.category);
+      console.log("📊 After category filter:", filteredProducts.length);
+    }
     
     if (filters.isActive !== undefined) {
       console.log("🎯 Filtering by isActive:", filters.isActive);
@@ -417,11 +418,10 @@ export const getCategories = async (): Promise<string[]> => {
       return [];
     }
 
+    // Simplified query to avoid composite index requirements
     const q = query(
       collection(db, "products"),
-      where("createdBy", "==", user.uid),
-      where("isActive", "==", true),
-      orderBy("category")
+      where("createdBy", "==", user.uid)
     );
     
     const querySnapshot = await getDocs(q);
@@ -429,7 +429,8 @@ export const getCategories = async (): Promise<string[]> => {
     
     querySnapshot.docs.forEach((doc) => {
       const data = doc.data();
-      if (data.category) {
+      // Only include active products and valid categories
+      if (data.category && data.isActive !== false) {
         categories.add(data.category);
       }
     });
