@@ -2,11 +2,12 @@ import React, { useState } from 'react';
 import { Button, Alert, Card, Container } from 'react-bootstrap';
 import { useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../hooks/useAuth';
+import { auth } from '../firebase/index';
 import { createProduct, getProducts } from '../services/productService';
 import type { Product } from '../types/productType';
 
 const DebugProducts: React.FC = () => {
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string>('');
@@ -41,11 +42,11 @@ const DebugProducts: React.FC = () => {
       setMessage(`✅ Successfully created product: ${createdProduct.title} (ID: ${createdProduct.id})`);
       
       // Force React Query cache invalidation
-      console.log('🔄 Invalidating React Query cache...');
+      console.log('🔄 Invalidating React Query cache for user:', user?.uid);
       await Promise.all([
         queryClient.invalidateQueries({ queryKey: ['products'] }),
-        queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
-        queryClient.invalidateQueries({ queryKey: ['products', null] }),
+        queryClient.invalidateQueries({ queryKey: ['products', undefined, user?.uid] }),
+        queryClient.invalidateQueries({ queryKey: ['products', null, user?.uid] }),
         queryClient.invalidateQueries({ queryKey: ['categories'] })
       ]);
       
@@ -91,6 +92,37 @@ const DebugProducts: React.FC = () => {
     }
   };
 
+  const checkAuthState = async () => {
+    try {
+      setMessage('🔍 Checking authentication state...');
+      
+      const firebaseUser = auth.currentUser;
+      console.log('🔥 Firebase auth.currentUser:', firebaseUser);
+      console.log('📱 React context user:', user);
+      
+      if (!firebaseUser) {
+        setMessage('❌ Firebase auth.currentUser is null');
+        return;
+      }
+      
+      if (!user) {
+        setMessage('❌ React context user is null');
+        return;
+      }
+      
+      const authMatch = firebaseUser.uid === user.uid;
+      setMessage(`🔍 Auth Check:
+Firebase User: ${firebaseUser.email} (${firebaseUser.uid})
+Context User: ${user.email} (${user.uid})
+Match: ${authMatch ? '✅ Yes' : '❌ No'}`);
+      
+    } catch (error) {
+      console.error('❌ Auth check error:', error);
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+      setMessage(`❌ Error checking auth: ${errorMessage}`);
+    }
+  };
+
   const clearMessage = () => setMessage('');
 
   if (!isAuthenticated) {
@@ -109,6 +141,11 @@ const DebugProducts: React.FC = () => {
       <Card>
         <Card.Header>
           <h5>🐛 Product Debug Panel</h5>
+          {user && (
+            <small className="text-muted">
+              Logged in as: <strong>{user.email}</strong> (UID: {user.uid})
+            </small>
+          )}
         </Card.Header>
         <Card.Body>
           <div className="d-flex gap-2 mb-3">
@@ -126,6 +163,14 @@ const DebugProducts: React.FC = () => {
               disabled={loading}
             >
               {loading ? '🔄 Working...' : '📋 Load Products'}
+            </Button>
+
+            <Button 
+              variant="warning" 
+              onClick={checkAuthState}
+              disabled={loading}
+            >
+              {loading ? '🔄 Working...' : '🔍 Check Auth'}
             </Button>
 
             {message && (

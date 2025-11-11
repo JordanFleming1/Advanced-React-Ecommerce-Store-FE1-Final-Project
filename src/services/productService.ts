@@ -45,7 +45,12 @@ export const createProduct = async (productData: ProductCreateData): Promise<Pro
       throw new Error("User must be authenticated to create products");
     }
 
-    console.log("✅ User authenticated:", user.uid);
+    console.log("✅ User authenticated:", {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName
+    });
+    console.log("🏷️ Product will be created with createdBy:", user.uid);
 
     // Validate required fields
     if (!productData.title || !productData.category || !productData.description) {
@@ -217,7 +222,12 @@ export const getProducts = async (
       };
     }
 
-    console.log("✅ User authenticated:", user.uid, "- filtering products by createdBy");
+    console.log("✅ User authenticated:", {
+      uid: user.uid,
+      email: user.email,
+      displayName: user.displayName
+    });
+    console.log("🎯 Filtering products by createdBy:", user.uid);
     
     // Simplified query to avoid complex Firestore indexes
     // We'll use client-side filtering for categories and sorting to avoid index requirements
@@ -243,7 +253,24 @@ export const getProducts = async (
     
     querySnapshot.docs.forEach((doc) => {
       const data = doc.data();
-      console.log("📄 Processing document:", doc.id, data.title);
+      console.log("📄 Processing document:", {
+        id: doc.id,
+        title: data.title,
+        createdBy: data.createdBy,
+        currentUser: user.uid,
+        isUserOwned: data.createdBy === user.uid
+      });
+      
+      // Double-check that this product belongs to the current user
+      if (data.createdBy !== user.uid) {
+        console.warn("⚠️ Found product not owned by current user - this should not happen!", {
+          productId: doc.id,
+          productCreatedBy: data.createdBy,
+          currentUser: user.uid
+        });
+        return; // Skip this product
+      }
+      
       products.push({
         id: doc.id,
         title: data.title,

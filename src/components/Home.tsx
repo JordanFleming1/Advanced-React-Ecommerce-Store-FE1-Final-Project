@@ -14,7 +14,7 @@ import { createProduct } from '../services/productService';
 const Home: React.FC = () => {
   // Redux dispatch hook
   const dispatch = useAppDispatch();
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, user } = useAuth();
   const queryClient = useQueryClient();
   
   // State for selected category
@@ -71,14 +71,14 @@ const Home: React.FC = () => {
 
   // Handle manual refresh
   const handleManualRefresh = async () => {
-    console.log("🔄 Manual refresh triggered");
+    console.log("🔄 Manual refresh triggered for user:", user?.uid);
     
-    // Invalidate all React Query caches
+    // Invalidate all React Query caches for this specific user
     await Promise.all([
       queryClient.invalidateQueries({ queryKey: ['products'] }),
-      queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] }),
-      queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
-      queryClient.invalidateQueries({ queryKey: ['products', null] }),
+      queryClient.invalidateQueries({ queryKey: ['products', selectedCategory, user?.uid] }),
+      queryClient.invalidateQueries({ queryKey: ['products', undefined, user?.uid] }),
+      queryClient.invalidateQueries({ queryKey: ['products', null, user?.uid] }),
       queryClient.invalidateQueries({ queryKey: ['categories'] })
     ]);
     
@@ -90,9 +90,9 @@ const Home: React.FC = () => {
 
   // Handle product update/delete callback
   const handleProductUpdated = () => {
-    // Invalidate React Query cache to refresh product list
+    // Invalidate React Query cache to refresh product list for this user
     queryClient.invalidateQueries({ queryKey: ['products'] });
-    queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] });
+    queryClient.invalidateQueries({ queryKey: ['products', selectedCategory, user?.uid] });
     queryClient.invalidateQueries({ queryKey: ['categories'] });
   };
 
@@ -124,27 +124,27 @@ const Home: React.FC = () => {
       await createProduct(quickProduct);
       setCreateSuccess('Product created successfully!');
       
-      console.log("🔄 Invalidating React Query cache...");
+      console.log("🔄 Invalidating React Query cache for user:", user?.uid);
       
       // Invalidate React Query cache to refresh product list
       // Use Promise.all to ensure all invalidations complete
       await Promise.all([
-        // Invalidate all product queries (with any category filter)
+        // Invalidate all product queries (with any category filter) for this user
         queryClient.invalidateQueries({ queryKey: ['products'] }),
-        // Specifically invalidate the current category view if any
-        queryClient.invalidateQueries({ queryKey: ['products', selectedCategory] }),
-        // Invalidate the "all products" view specifically
-        queryClient.invalidateQueries({ queryKey: ['products', undefined] }),
-        queryClient.invalidateQueries({ queryKey: ['products', null] }),
+        // Specifically invalidate the current category view for this user
+        queryClient.invalidateQueries({ queryKey: ['products', selectedCategory, user?.uid] }),
+        // Invalidate the "all products" view specifically for this user
+        queryClient.invalidateQueries({ queryKey: ['products', undefined, user?.uid] }),
+        queryClient.invalidateQueries({ queryKey: ['products', null, user?.uid] }),
         // Also invalidate categories in case we added a new category
         queryClient.invalidateQueries({ queryKey: ['categories'] })
       ]);
       
       console.log("✅ Cache invalidation completed");
       
-      // Force a refetch of the current data
+      // Force a refetch of the current data for this user
       await queryClient.refetchQueries({ queryKey: ['products'] });
-      await queryClient.refetchQueries({ queryKey: ['products', selectedCategory] });
+      await queryClient.refetchQueries({ queryKey: ['products', selectedCategory, user?.uid] });
       console.log("🔄 Forced refetch completed");
       
       // Reset form
