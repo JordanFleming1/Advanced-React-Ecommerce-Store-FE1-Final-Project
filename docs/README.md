@@ -1,148 +1,76 @@
-# Advanced React E-commerce Store# 🛍️ Advanced React TypeScript Ecommerce Store
+# 🛍️ Advanced React TypeScript Ecommerce Store
 
-
-
-A modern, feature-rich e-commerce application built with React 19, TypeScript, and Firebase.[![Build and Test](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml)
-
+[![Build and Test](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml)
 [![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml)
 
-## 🚀 Quick Start
-
 A modern, fully-featured ecommerce web application that I built with React, TypeScript, Redux Toolkit, and React Query. This project showcases my advanced frontend development skills and comprehensive understanding of modern web technologies. 
+## ✨ Features
 
-```bash## ✨ Features
-
-npm install
-
-npm run dev### 🛒 **Shopping Cart System**
-
-```- **Redux Toolkit** state management with TypeScript
-
+### 🛒 **Shopping Cart System**
+- **Redux Toolkit** state management with TypeScript
 - **SessionStorage persistence** - cart survives page refresh
-
-## 📚 Documentation- **Real-time cart updates** with automatic total calculations
-
+- **Real-time cart updates** with automatic total calculations
 - **Cart sidebar** with quantity controls and item removal
+- **Checkout simulation** with success feedback
 
-All detailed documentation has been organized in the `docs/` folder:- **Checkout simulation** with success feedback
-
-
-
-### Core Documentation### 🔍 **Product Catalog**
-
-- **[Main README](./docs/README.md)** - Complete project overview and setup instructions- **Dynamic product filtering** by category
-
-- **[Deployment Guide](./docs/DEPLOYMENT-GUIDE.md)** - Production deployment with Vercel- **React Query integration** for efficient API data fetching
-
-- **[CI/CD Implementation](./docs/CI-CD-IMPLEMENTATION.md)** - GitHub Actions workflows- **Responsive grid layout** adapting to all screen sizes
-
+### 🔍 **Product Catalog**
+- **Dynamic product filtering** by category
+- **React Query integration** for efficient API data fetching
+- **Responsive grid layout** adapting to all screen sizes
 - **Image fallback handling** for broken API image URLs
+- **Loading states and error handling** for better UX
 
-### Feature Documentation- **Loading states and error handling** for better UX
-
-- **[Authentication Guide](./docs/AUTHENTICATION.md)** - Firebase authentication implementation
-
-- **[Product Management](./docs/FIRESTORE_PRODUCTS.md)** - Firestore product data management### 🎨 **User Interface**
-
-- **[Testing Guide](./docs/TESTING.md)** - Testing setup and guidelines- **Bootstrap 5** for professional styling
-
+### 🎨 **User Interface**
+- **Bootstrap 5** for professional styling
 - **Responsive design** - mobile-first approach
-
-### Development Resources- **Loading spinners** and error messages
-
-- **[Product Debug Guide](./docs/PRODUCT-DEBUG-GUIDE.md)** - Troubleshooting common issues- **Real-time cart badge** showing item count
-
+- **Loading spinners** and error messages
+- **Real-time cart badge** showing item count
 - **Smooth animations** and hover effects
 
-## 🛠 Tech Stack
-
 ### **Technical Features**
+- **Full TypeScript implementation** that I developed with strict type checking
+- **Custom React Query hooks** that I created for API data management
+- **Component composition** with reusable patterns I designed
+- **Error boundaries** and graceful error handling I implemented
+- **Performance optimizations** with React Query caching that I configured
 
-- **Frontend**: React 19, TypeScript, Vite- **Full TypeScript implementation** that I developed with strict type checking
+## 🛠️ Tech Stack
 
-- **State Management**: Redux Toolkit, TanStack Query- **Custom React Query hooks** that I created for API data management
-
-- **Authentication**: Firebase Auth- **Component composition** with reusable patterns I designed
-
-- **Database**: Cloud Firestore- **Error boundaries** and graceful error handling I implemented
-
-- **Styling**: Bootstrap, CSS Modules- **Performance optimizations** with React Query caching that I configured
-
-- **Testing**: Vitest, Happy DOM
-
-- **Deployment**: Vercel with GitHub Actions CI/CD## 🛠️ Tech Stack
-
-
-
-## 🔗 Live Demo### **Frontend Framework**
-
+### **Frontend Framework**
 - **React 19** - Modern React with hooks
-
-**Production**: [Your Vercel URL]- **TypeScript** - Type-safe JavaScript
-
+- **TypeScript** - Type-safe JavaScript
 - **Vite** - Fast build tool and dev server
 
-## 📦 Project Structure
-
 ### **State Management**
+- **Redux Toolkit** - Simplified Redux for cart management
+- **React Query (TanStack Query)** - Server state management
 
-```- **Redux Toolkit** - Simplified Redux for cart management
+### **UI & Styling**
+- **React Bootstrap** - Bootstrap components for React
+- **Bootstrap 5** - Responsive CSS framework
+- **CSS3** - Custom styling and animations
 
-src/- **React Query (TanStack Query)** - Server state management
-
-├── components/     # React components
-
-├── contexts/      # React contexts### **UI & Styling**
-
-├── store/         # Redux store- **React Bootstrap** - Bootstrap components for React
-
-├── hooks/         # Custom hooks- **Bootstrap 5** - Responsive CSS framework
-
-├── utils/         # Utility functions- **CSS3** - Custom styling and animations
-
-├── types/         # TypeScript types
-
-└── test/          # Test utilities### **API Integration**
-
+### **API Integration**
 - **FakeStore API** - Demo ecommerce API
+- **Fetch API** - HTTP requests
+- **React Query** - Caching and synchronization
 
-docs/              # All documentation files- **Fetch API** - HTTP requests
+### **Development Tools**
+- **ESLint** - Code linting
+- **TypeScript Compiler** - Type checking
+- **Vite HMR** - Hot module replacement
 
-├── README.md- **React Query** - Caching and synchronization
+### Installation
 
-├── AUTHENTICATION.md
-
-├── CI-CD-IMPLEMENTATION.md### **Development Tools**
-
-├── DEPLOYMENT-GUIDE.md- **ESLint** - Code linting
-
-├── FIRESTORE_PRODUCTS.md- **TypeScript Compiler** - Type checking
-
-├── PRODUCT-DEBUG-GUIDE.md- **Vite HMR** - Hot module replacement
-
-└── TESTING.md
-
-```### Installation
-
-
-
-## 🤝 Contributing1. **Clone my repository**
-
+1. **Clone my repository**
 ```bash
+git clone https://github.com/JordanFleming1/Advanced-React-Ecommerce-Store-FE1-Final-Project.git
+cd Advanced-React-Ecommerce-Store-FE1-Final-Project
+```
 
-1. Check the documentation in the `docs/` foldergit clone https://github.com/JordanFleming1/Advanced-React-Ecommerce-Store-FE1-Final-Project.git
-
-2. Follow the testing guidelines in `docs/TESTING.md`cd Advanced-React-Ecommerce-Store-FE1-Final-Project
-
-3. Refer to the debug guide if you encounter issues```
-
-
-
----2. **Install dependencies**
-
+2. **Install dependencies**
 ```bash
-
-For detailed setup instructions and feature documentation, please refer to the files in the `docs/` directory.npm install
+npm install
 ```
 
 3. **Start development server**
