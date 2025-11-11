@@ -11,6 +11,7 @@ import ProfileEdit from './components/ProfileEdit';
 import ProductManagement from './components/ProductManagement';
 import OrderHistory from './components/OrderHistory';
 import FirebaseTest from './components/FirebaseTest';
+import DebugProducts from './components/DebugProducts';
 import ShoppingCart from './components/ShoppingCart';
 import './App.css';
 
@@ -29,6 +30,7 @@ const App: React.FC = () => {
             <Route path="/admin/products" element={<ProductManagement />} />
             <Route path="/orders" element={<OrderHistory />} />
             <Route path="/test-firebase" element={<FirebaseTest />} />
+            <Route path="/debug-products" element={<DebugProducts />} />
           </Routes>
           <ShoppingCart />
         </div>

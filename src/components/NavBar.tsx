@@ -91,6 +91,10 @@ const NavBar: React.FC = () => {
                     📦 My Orders
                   </Dropdown.Item>
                   <Dropdown.Divider />
+                  <Dropdown.Item as={Link} to="/debug-products">
+                    🐛 Debug Products
+                  </Dropdown.Item>
+                  <Dropdown.Divider />
                   <Dropdown.Item 
                     onClick={handleLogout}
                     disabled={logoutLoading}
