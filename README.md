@@ -1,14 +1,169 @@
-# Advanced React E-commerce Store# 🛍️ Advanced React TypeScript Ecommerce Store
+# 🛍️ Advanced React E-commerce Store
 
-
-
-A modern, feature-rich e-commerce application built with React 19, TypeScript, and Firebase.[![Build and Test](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml)
+A modern, feature-rich e-commerce application built with React 19, TypeScript, and Firebase.
 
 [![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml)
 
 ## 🚀 Quick Start
 
-A modern, fully-featured ecommerce web application that I built with React, TypeScript, Redux Toolkit, and React Query. This project showcases my advanced frontend development skills and comprehensive understanding of modern web technologies. 
+```bash
+npm install
+npm run dev
+```
+
+## ✨ Features
+
+### 🛒 **Shopping Cart System**
+- **Redux Toolkit** state management with TypeScript
+- **SessionStorage persistence** - cart survives page refresh
+- **Real-time cart updates** with automatic total calculations
+- **Cart sidebar** with quantity controls and item removal
+- **Checkout simulation** with success feedback
+
+### 🔍 **Product Catalog**
+- **React Query integration** for efficient API data fetching
+- **Responsive grid layout** adapting to all screen sizes
+- **Image fallback handling** for broken API image URLs
+- **Loading states and error handling** for better UX
+- **User-specific products** - each user sees only their own products
+
+### 🎨 **User Interface**
+- **Bootstrap 5** for professional styling
+- **Responsive design** - mobile-first approach
+- **Loading spinners** and error messages
+- **Real-time cart badge** showing item count
+- **Smooth animations** and hover effects
+
+### **Technical Features**
+- **Full TypeScript implementation** with strict type checking
+- **Custom React Query hooks** for API data management
+- **Component composition** with reusable patterns
+- **Error boundaries** and graceful error handling
+- **Performance optimizations** with React Query caching
+
+## 📚 Documentation
+
+All detailed documentation has been organized in the `docs/` folder:
+
+### Core Documentation
+- **[Main README](./docs/README.md)** - Complete project overview and setup instructions
+- **[Deployment Guide](./docs/DEPLOYMENT-GUIDE.md)** - Production deployment with Vercel
+- **[CI/CD Implementation](./docs/CI-CD-IMPLEMENTATION.md)** - GitHub Actions workflows
+
+### Feature Documentation
+- **[Authentication Guide](./docs/AUTHENTICATION.md)** - Firebase authentication implementation
+- **[Product Management](./docs/FIRESTORE_PRODUCTS.md)** - Firestore product data management
+- **[User-Specific Products](./docs/USER-SPECIFIC-PRODUCTS.md)** - Personal product catalogs per user
+- **[Testing Guide](./docs/TESTING.md)** - Testing setup and guidelines
+
+### Development Resources
+- **[Product Debug Guide](./docs/PRODUCT-DEBUG-GUIDE.md)** - Troubleshooting common issues
+
+## 🛠️ Tech Stack
+
+### **Frontend Framework**
+- **React 19** - Modern React with hooks
+- **TypeScript** - Type-safe JavaScript
+- **Vite** - Fast build tool and dev server
+
+### **State Management**
+- **Redux Toolkit** - Predictable state container
+- **React Query (TanStack Query)** - Server state management
+- **React Context** - Component-level state
+
+### **Backend Services**
+- **Firebase Authentication** - User management
+- **Cloud Firestore** - NoSQL database
+- **Firebase Security Rules** - Data protection
+
+### **UI Framework**
+- **React Bootstrap** - Component library
+- **Bootstrap 5** - CSS framework
+- **CSS Modules** - Scoped styling
+
+### **Development Tools**
+- **ESLint** - Code linting
+- **Prettier** - Code formatting
+- **Vitest** - Unit testing
+- **React Testing Library** - Component testing
+
+### **Deployment**
+- **Vercel** - Production hosting
+- **GitHub Actions** - CI/CD pipeline
+- **npm** - Package management
+
+## 🔗 Live Demo
+
+**Production**: [Your Vercel URL]
+
+## 📦 Project Structure
+
+```
+src/
+├── components/     # React components
+├── contexts/      # React contexts
+├── store/         # Redux store
+├── hooks/         # Custom hooks
+├── utils/         # Utility functions
+├── types/         # TypeScript types
+└── test/          # Test utilities
+
+docs/              # All documentation files
+├── README.md
+├── AUTHENTICATION.md
+├── CI-CD-IMPLEMENTATION.md
+├── DEPLOYMENT-GUIDE.md
+├── FIRESTORE_PRODUCTS.md
+├── PRODUCT-DEBUG-GUIDE.md
+├── TESTING.md
+└── USER-SPECIFIC-PRODUCTS.md
+```
+
+## 🔐 User-Specific Features
+
+### **Personal Product Catalogs**
+- Each user has their own private product inventory
+- Products are automatically associated with the user who created them
+- Unauthenticated users cannot view any products
+- Complete data isolation between users
+
+### **Authentication Requirements**
+- Sign in required to view products
+- Product creation requires authentication
+- User-specific categories and statistics
+- Secure product ownership validation
+
+## 🚀 Getting Started
+
+### Prerequisites
+- Node.js 18.x or higher
+- npm or yarn package manager
+- Firebase account for backend services
+
+### Installation
+1. Clone the repository
+2. Install dependencies: `npm install`
+3. Configure Firebase (see [Authentication Guide](./docs/AUTHENTICATION.md))
+4. Start development server: `npm run dev`
+
+### Testing
+- Run tests: `npm test`
+- Run tests with UI: `npm run test:ui`
+- Generate coverage: `npm run test:coverage`
+
+### Building for Production
+- Build: `npm run build`
+- Preview build: `npm run preview`
+
+## 🤝 Contributing
+
+1. Check the documentation in the `docs/` folder
+2. Follow the testing guidelines in `docs/TESTING.md`
+3. Refer to the debug guide if you encounter issues
+
+---
+
+For detailed setup instructions and feature documentation, please refer to the files in the `docs/` directory. 
 
 ```bash## ✨ Features
 
