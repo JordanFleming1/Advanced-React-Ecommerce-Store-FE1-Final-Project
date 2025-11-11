@@ -1,5 +1,11 @@
 # 🛍️ Advanced React E-commerce Store
 
+## 🌐 **Live Demo**
+### **🚀 [View Live Store →](https://advanced-react-ecommerce-store.vercel.app)**
+*Experience the fully functional e-commerce application deployed on Vercel*
+
+---
+
 A modern, feature-rich e-commerce application built with React 19, TypeScript, and Firebase.
 
 [![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml)
@@ -94,7 +100,7 @@ All detailed documentation has been organized in the `docs/` folder:
 
 ## 🔗 Live Demo
 
-**Production**: [Your Vercel URL]
+**Production**: [https://advanced-react-ecommerce-store.vercel.app](https://advanced-react-ecommerce-store.vercel.app)
 
 ## 📦 Project Structure
 

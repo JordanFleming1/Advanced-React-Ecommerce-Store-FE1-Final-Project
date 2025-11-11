@@ -1,7 +1,10 @@
 # 🛍️ Advanced React TypeScript Ecommerce Store
 
-[![Build and Test](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/ci.yml)
-[![CI/CD Pipeline](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml/badge.svg)](https://github.com/YOUR_USERNAME/YOUR_REPOSITORY/actions/workflows/main.yml)
+## 🌐 **Live Demo**
+### **🚀 [View Live Store →](https://advanced-react-ecommerce-store.vercel.app)**
+*Experience the fully functional e-commerce application deployed on Vercel*
+
+---
 
 A modern, fully-featured ecommerce web application that I built with React, TypeScript, Redux Toolkit, and React Query. This project showcases my advanced frontend development skills and comprehensive understanding of modern web technologies. 
 ## ✨ Features
