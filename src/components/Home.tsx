@@ -176,6 +176,28 @@ const Home: React.FC = () => {
     );
   }
 
+  // Authentication required message
+  if (!isAuthenticated) {
+    return (
+      <Container className="mt-4">
+        <Alert variant="info">
+          <Alert.Heading>🔐 Authentication Required</Alert.Heading>
+          <p>
+            Please sign in to view and manage your products. Each user has their own private product catalog.
+          </p>
+          <div className="mt-3">
+            <Link to="/login">
+              <Button variant="primary" className="me-2">🔐 Sign In</Button>
+            </Link>
+            <Link to="/register">
+              <Button variant="outline-primary">📝 Create Account</Button>
+            </Link>
+          </div>
+        </Alert>
+      </Container>
+    );
+  }
+
   // Error state
   if (isError) {
     const errorMessage = error instanceof Error ? error.message : 'Something went wrong while fetching products.';

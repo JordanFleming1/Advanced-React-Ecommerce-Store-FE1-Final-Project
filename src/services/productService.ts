@@ -195,6 +195,7 @@ export const createProductsBatch = async (products: ProductCreateData[]): Promis
 
 /**
  * Get all products with optional filtering, sorting, and pagination
+ * Only returns products created by the currently authenticated user
  */
 export const getProducts = async (
   filters: ProductFilters = {},
@@ -204,9 +205,27 @@ export const getProducts = async (
   try {
     console.log("🔍 getProducts called with filters:", filters);
     
+    // Check if user is authenticated
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("❌ User not authenticated, returning empty results");
+      return {
+        products: [],
+        total: 0,
+        page: 0,
+        limit: pageSize,
+        hasMore: false
+      };
+    }
+
+    console.log("✅ User authenticated:", user.uid, "- filtering products by createdBy");
+    
     // Use a simplified query to avoid complex Firestore indexes
     const constraints: Parameters<typeof query>[1][] = [];
 
+    // IMPORTANT: Filter by user ID first to ensure user-specific products
+    constraints.push(where("createdBy", "==", user.uid));
+    
     // Only use basic filters that don't require complex composite indexes
     if (filters.category) {
       console.log("📂 Adding category filter:", filters.category);
@@ -327,14 +346,27 @@ export const getProducts = async (
 };
 
 /**
- * Get product by ID
+ * Get product by ID (only if owned by current user)
  */
 export const getProductById = async (productId: string): Promise<Product | null> => {
   try {
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("❌ User not authenticated, cannot access product");
+      return null;
+    }
+
     const productDoc = await getDoc(doc(db, "products", productId));
     
     if (productDoc.exists()) {
       const data = productDoc.data();
+      
+      // Check if the product belongs to the current user
+      if (data.createdBy !== user.uid) {
+        console.log("❌ Product does not belong to current user");
+        return null;
+      }
+      
       return {
         id: productDoc.id,
         title: data.title,
@@ -375,12 +407,19 @@ export const getProductsByCategory = async (category: string): Promise<Product[]
 };
 
 /**
- * Get all categories
+ * Get all categories (only from user's own products)
  */
 export const getCategories = async (): Promise<string[]> => {
   try {
+    const user = auth.currentUser;
+    if (!user) {
+      console.log("❌ User not authenticated, returning empty categories");
+      return [];
+    }
+
     const q = query(
       collection(db, "products"),
+      where("createdBy", "==", user.uid),
       where("isActive", "==", true),
       orderBy("category")
     );
@@ -650,7 +689,7 @@ export const checkProductExists = async (productId: string): Promise<boolean> =>
 };
 
 /**
- * Get product statistics
+ * Get product statistics (only from user's own products)
  */
 export const getProductStats = async (): Promise<{
   totalProducts: number;
@@ -659,7 +698,20 @@ export const getProductStats = async (): Promise<{
   categoriesCount: number;
 }> => {
   try {
-    const allProductsQuery = query(collection(db, "products"));
+    const user = auth.currentUser;
+    if (!user) {
+      return {
+        totalProducts: 0,
+        activeProducts: 0,
+        totalValue: 0,
+        categoriesCount: 0
+      };
+    }
+
+    const allProductsQuery = query(
+      collection(db, "products"),
+      where("createdBy", "==", user.uid)
+    );
     const allProductsSnapshot = await getDocs(allProductsQuery);
     
     let activeProducts = 0;
